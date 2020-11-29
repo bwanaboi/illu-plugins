@@ -1,11 +1,7 @@
 package net.runelite.client.plugins.iherbcleaner.tasks;
 
-import java.awt.Rectangle;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.GameObject;
-import net.runelite.api.MenuEntry;
-import net.runelite.api.MenuOpcode;
 import net.runelite.api.events.GameTick;
 import net.runelite.client.plugins.iherbcleaner.Task;
 import net.runelite.client.plugins.iherbcleaner.iHerbCleanerPlugin;
@@ -44,7 +40,7 @@ public class BankItemsTask extends Task
 	@Override
 	public void onGameTick(GameTick event)
 	{
-		int sleep = 0;
+		long sleep = 0;
 		if (!inventory.isEmpty())
 		{
 			status = "Depositing items";

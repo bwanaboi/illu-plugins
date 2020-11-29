@@ -15,7 +15,8 @@ public class KnockoutTask extends Task
 	NPC bandit;
 
 	@Override
-	public boolean validate() {
+	public boolean validate()
+	{
 		if (selectedNPCIndex == 0)
 		{
 			return false;
@@ -23,7 +24,7 @@ public class KnockoutTask extends Task
 		bandit = npc.findNearestNpcIndex(selectedNPCIndex, config.npcType().npcid);
 
 		return client.getTickCount() >= nextKnockoutTick && bandit != null &&
-		inventory.getItemMenu(foodMenu) != null;
+			inventory.getItemMenu(foodMenu) != null;
 	}
 
 	@Override
@@ -36,6 +37,6 @@ public class KnockoutTask extends Task
 	public void onGameTick(GameTick event)
 	{
 		entry = new MenuEntry("", "", selectedNPCIndex, MenuOpcode.NPC_FIFTH_OPTION.getId(), 0, 0, false);
-		utils.doActionMsTime(entry, bandit.getConvexHull().getBounds(), (int) sleepDelay());
+		utils.doActionMsTime(entry, bandit.getConvexHull().getBounds(), sleepDelay());
 	}
 }

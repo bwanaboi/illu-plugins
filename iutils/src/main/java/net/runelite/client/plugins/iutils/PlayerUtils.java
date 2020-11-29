@@ -15,6 +15,7 @@ import net.runelite.api.ItemContainer;
 import net.runelite.api.ItemID;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
+import net.runelite.api.Player;
 import net.runelite.api.Varbits;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.widgets.Widget;
@@ -49,13 +50,14 @@ public class PlayerUtils
 
 	private int nextRunEnergy;
 
-	//Not very accurate, recommend using isMoving(LocalPoint lastTickLocalPoint)
 	public boolean isMoving()
 	{
-		int camX = client.getCameraX2();
-		int camY = client.getCameraY2();
-		sleep(25);
-		return (camX != client.getCameraX() || camY != client.getCameraY()) && client.getLocalDestinationLocation() != null;
+		Player player = client.getLocalPlayer();
+		if (player == null)
+		{
+			return false;
+		}
+		return player.getIdlePoseAnimation() != player.getPoseAnimation();
 	}
 
 	public boolean isMoving(LocalPoint lastTickLocalPoint)
@@ -88,7 +90,7 @@ public class PlayerUtils
 			nextRunEnergy = calc.getRandomIntBetweenRange(minEnergy, minEnergy + calc.getRandomIntBetweenRange(0, randMax));
 		}
 		if (client.getEnergy() > nextRunEnergy ||
-				client.getVar(Varbits.RUN_SLOWED_DEPLETION_ACTIVE) != 0)
+			client.getVar(Varbits.RUN_SLOWED_DEPLETION_ACTIVE) != 0)
 		{
 			if (drinkStamPot(15 + calc.getRandomIntBetweenRange(0, 30)))
 			{
@@ -114,7 +116,7 @@ public class PlayerUtils
 			nextRunEnergy = calc.getRandomIntBetweenRange(minEnergy, minEnergy + calc.getRandomIntBetweenRange(0, randMax));
 		}
 		if (client.getEnergy() > (minEnergy + calc.getRandomIntBetweenRange(0, randMax)) ||
-				client.getVar(Varbits.RUN_SLOWED_DEPLETION_ACTIVE) != 0)
+			client.getVar(Varbits.RUN_SLOWED_DEPLETION_ACTIVE) != 0)
 		{
 			if (drinkStamPot(potEnergy))
 			{
@@ -138,7 +140,7 @@ public class PlayerUtils
 		executorService.submit(() ->
 		{
 			menu.setEntry(new MenuEntry("Toggle Run", "", 1, 57, -1,
-					10485782, false));
+				10485782, false));
 			mouse.delayMouseClick(runOrbBounds, calc.getRandomIntBetweenRange(10, 250));
 		});
 	}
@@ -147,10 +149,10 @@ public class PlayerUtils
 	public WidgetItem shouldStamPot(int energy)
 	{
 		if (!inventory.getItems(List.of(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4)).isEmpty()
-				&& client.getVar(Varbits.RUN_SLOWED_DEPLETION_ACTIVE) == 0 && client.getEnergy() < energy && !bank.isOpen())
+			&& client.getVar(Varbits.RUN_SLOWED_DEPLETION_ACTIVE) == 0 && client.getEnergy() < energy && !bank.isOpen())
 		{
 			return inventory.getWidgetItem(List.of(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3,
-					ItemID.STAMINA_POTION4, ItemID.ENERGY_POTION1, ItemID.ENERGY_POTION2, ItemID.ENERGY_POTION3, ItemID.ENERGY_POTION4));
+				ItemID.STAMINA_POTION4, ItemID.ENERGY_POTION1, ItemID.ENERGY_POTION2, ItemID.ENERGY_POTION3, ItemID.ENERGY_POTION4));
 		}
 		else
 		{
@@ -165,7 +167,7 @@ public class PlayerUtils
 		{
 			log.info("using stamina potion");
 			menu.setEntry(new MenuEntry("", "", staminaPotion.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(),
-					staminaPotion.getIndex(), 9764864, false));
+				staminaPotion.getIndex(), 9764864, false));
 			mouse.delayMouseClick(staminaPotion.getCanvasBounds(), calc.getRandomIntBetweenRange(5, 200));
 			return true;
 		}
@@ -199,10 +201,13 @@ public class PlayerUtils
 		assert client.isClientThread();
 
 		ItemContainer equipmentContainer = client.getItemContainer(InventoryID.EQUIPMENT);
-		if (equipmentContainer != null) {
+		if (equipmentContainer != null)
+		{
 			Item[] items = equipmentContainer.getItems();
-			for (Item item : items) {
-				if (itemIds.contains(item.getId())) {
+			for (Item item : items)
+			{
+				if (itemIds.contains(item.getId()))
+				{
 					return true;
 				}
 			}
